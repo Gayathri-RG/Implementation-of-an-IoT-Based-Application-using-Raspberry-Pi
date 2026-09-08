@@ -134,10 +134,26 @@ The LED is used as a local status indicator. It turns ON when the measured tempe
 ---
 
 # Program
+```
+#include <LiquidCrystal.h>
 
+// LCD pins: RS, EN, D4, D5, D6, D7
+LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 
+void setup() {
+  lcd.begin(16, 2);
+
+  lcd.setCursor(0, 0);
+  lcd.print("EMBEDDED");
+}
+
+void loop() {
+  // Nothing needed here
+}
+```
 # Observation
 
+<img width="1600" height="719" alt="WhatsApp Image 2026-09-08 at 2 23 26 PM" src="https://github.com/user-attachments/assets/0edb6e5b-610f-433c-a644-c91b48b03a4f" />
 
 
 # Result
