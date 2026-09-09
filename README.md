@@ -27,13 +27,20 @@ To implement an IoT-based environmental monitoring application using Raspberry P
 
 ---
 
-**To upload Wokwi circuit diagram**
+<img width="406" height="433" alt="image" src="https://github.com/user-attachments/assets/c74b2fa7-737c-4686-a35e-1aba41c9a8c2" />
+
 
 ---
 
 # Circuit Connections
 
-
+| Component | Pin | Raspberry Pi Pico Connection |
+|---|---|---|
+| DHT22 Sensor | VCC | 3V3 |
+| DHT22 Sensor | DATA | GP15 |
+| DHT22 Sensor | GND | GND |
+| LED | Anode (+) | GP14 through 220Ω resistor |
+| LED | Cathode (-) | GND |
 
 # IoT Application
 
@@ -135,25 +142,58 @@ The LED is used as a local status indicator. It turns ON when the measured tempe
 
 # Program
 ```
-#include <LiquidCrystal.h>
+from machine import Pin
+import time
+import dht
 
-// LCD pins: RS, EN, D4, D5, D6, D7
-LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
+# GPIO pin configuration
+DHT_PIN = 15
+LED_PIN = 14
 
-void setup() {
-  lcd.begin(16, 2);
+# Configure components
+sensor = dht.DHT22(Pin(DHT_PIN))
+led = Pin(LED_PIN, Pin.OUT)
 
-  lcd.setCursor(0, 0);
-  lcd.print("EMBEDDED");
-}
+print("IoT-Based Temperature Monitoring System Started")
 
-void loop() {
-  // Nothing needed here
-}
+while True:
+    try:
+        # Read temperature and humidity
+        sensor.measure()
+
+        temperature = sensor.temperature()
+        humidity = sensor.humidity()
+
+        # Display sensor readings
+        print("Temperature:", temperature, "°C")
+        print("Humidity:", humidity, "%")
+
+        # Control LED based on temperature
+        if temperature > 30:
+            led.value(1)
+            print("Temperature is HIGH - LED ON")
+        else:
+            led.value(0)
+            print("Temperature is NORMAL - LED OFF")
+
+        print("--------------------------")
+
+    except Exception as e:
+        print("Sensor Error:", e)
+
+    time.sleep(2)
 ```
+
 # Observation
 
-<img width="1600" height="719" alt="WhatsApp Image 2026-09-08 at 2 23 26 PM" src="https://github.com/user-attachments/assets/0edb6e5b-610f-433c-a644-c91b48b03a4f" />
+| S.No | Temperature | Humidity  | LED Status | Observation                     |
+| ---- | ----------- | --------- | ---------- | ------------------------------- |
+| 1    | Below 30°C  | Any value | OFF        | Temperature is normal           |
+| 2    | 30°C        | Any value | OFF        | Temperature is at the threshold |
+| 3    | Above 30°C  | Any value | ON         | High temperature detected       |
+| 4    | 35°C        | 60%       | ON         | LED indicates high temperature  |
+| 5    | 25°C        | 70%       | OFF        | Normal environmental condition  |
+
 
 
 # Result
